@@ -77,13 +77,21 @@ public class GameCore {
             while(true){
                 if(path.size() == 0){
                     //路走完了，重新找路
-                    path = findPath();
+                    path = findPath(gameData.getFoodPoint());
                     System.out.println("路走完了，重新寻路中...");
+                    //情况1，找不到去食物的路
                     if(path == null){
-                        //迷路了，游戏结束
                         System.out.println("寻路失败，找不到去食物的路");
-                        gameData.setGameStatus(GameStatusEnum.STOP);
-                        return ;
+                        //尝试跟着尾巴走,走一步就重新找一下去食物的路
+                        Queue<Point> tempPath = findPath(snake.getTail());
+                        //情况2，找不到尾巴
+                        if(tempPath == null){
+                            System.out.println("寻路失败，找不到去尾巴的路");
+                            gameData.setGameStatus(GameStatusEnum.STOP);
+                            return ;
+                        }
+                        path = new LinkedBlockingQueue<>();
+                        path.add(tempPath.remove());
                     }
                 }
                 Point tail = snake.getTail();
@@ -122,7 +130,7 @@ public class GameCore {
      * 寻找路径
      * @return
      */
-    private Queue<Point> findPath(){
+    private Queue<Point> findPath(Point endP){
        //地图上各点到蛇首的距离
         int[][] dis = new int[MAP_WIDTH][MAP_HEIGHT];
         for(int i= 0;i<MAP_WIDTH;i++){
@@ -133,7 +141,6 @@ public class GameCore {
         //是否寻路成功标识
         boolean flag = false;
         Point startP = snake.getHead();
-        Point endP = gameData.getFoodPoint();
 
         Queue<Point> queue = new LinkedBlockingQueue<>();
         //加入起点，开始遍历
