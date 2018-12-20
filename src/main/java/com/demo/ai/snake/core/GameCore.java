@@ -159,7 +159,7 @@ public class GameCore {
         if(!flag){
             return null;
         }
-        System.out.println("    地图到起点距离图");
+/*        System.out.println("    地图到起点距离图");
         for(int i=0; i<MAP_WIDTH; i++){
             for(int j=0; j<MAP_HEIGHT; j++){
                 if(i == endP.y && j == endP.x){
@@ -170,7 +170,7 @@ public class GameCore {
 
             }
             System.out.println();
-        }
+        }*/
         //查找路径
         LinkedList<Point> path = new LinkedList<>();
         path.addFirst(endP);

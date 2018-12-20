@@ -1,11 +1,8 @@
 package com.demo.ai.snake.model;
 
 
-import com.demo.ai.snake.constant.SnakeDirectionEnum;
-
-import java.awt.Point;
+import java.awt.*;
 import java.util.LinkedList;
-import java.util.List;
 
 /**
  * Created on 2018/12/18.
@@ -21,13 +18,11 @@ public class Snake {
     /**
      * 蛇方向
      */
-    private SnakeDirectionEnum direction;
     public Snake() {
         init();
     }
 
     public void init(){
-        direction = SnakeDirectionEnum.RIGHT;
         body = new LinkedList<>();
         body.addFirst(new Point(3,17));
         body.addFirst(new Point(4,17));
@@ -64,13 +59,7 @@ public class Snake {
     public Point getTail(){
         return body.getLast();
     }
-    public SnakeDirectionEnum getDirection() {
-        return direction;
-    }
 
-    public void setDirection(SnakeDirectionEnum direction) {
-        this.direction = direction;
-    }
 
     public LinkedList<Point> getBody() {
         return body;
