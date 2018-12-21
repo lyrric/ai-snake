@@ -1,7 +1,6 @@
 package com.demo.ai.snake.core;
 
 import com.demo.ai.snake.constant.GameStatusEnum;
-import com.demo.ai.snake.constant.MapEnum;
 import com.demo.ai.snake.data.GameData;
 import com.demo.ai.snake.model.Snake;
 import com.demo.ai.snake.ui.GamePanel;
@@ -9,15 +8,7 @@ import com.demo.ai.snake.util.MapUtil;
 import com.demo.ai.snake.util.SimulateGame;
 
 import java.awt.Point;
-import java.util.Collections;
-import java.util.LinkedList;
-import java.util.List;
 import java.util.Queue;
-import java.util.concurrent.ConcurrentLinkedQueue;
-import java.util.concurrent.LinkedBlockingQueue;
-
-import static com.demo.ai.snake.data.GameData.MAP_HEIGHT;
-import static com.demo.ai.snake.data.GameData.MAP_WIDTH;
 
 /**
  * Created on 2018/12/20.
@@ -77,9 +68,9 @@ public class GameCore {
                 //找去食物的路
                 MapUtil mapUtil = new MapUtil(gameData.getMapCopy(), snake.getHead(), gameData.getFoodPoint());
                 //有路去食物，并且吃了食物之后能找到蛇尾
-                if (mapUtil.isReachable() && new SimulateGame(snake, mapUtil.getPath()).isSafe()) {
+                if (mapUtil.isReachable() && new SimulateGame(snake, mapUtil.getShortestPath()).isSafe()) {
                    //放行
-                   nextP = mapUtil.getPath().remove();
+                   nextP = mapUtil.getShortestPath().remove();
                 } else {
                     //找不到去食物的路，或者吃了食物之后找不到蛇尾
                     //尝试跟着尾巴走,走一步就重新找一下去食物的路
@@ -87,7 +78,7 @@ public class GameCore {
                     if (mapUtil.isReachable()) {
                         //有路去尾巴，则向尾巴方向前进，前进一步计算重新计算
                         System.out.println("找不到去食物的路，先向尾巴方向前进一步");
-                        Queue<Point> tempPath = mapUtil.getPath();
+                        Queue<Point> tempPath = mapUtil.getShortestPath();
                         nextP = tempPath.remove();
                         //需要判断下，头和尾相邻的情况，直接前行会撞上
                         if(snake.getTail().equals(nextP)){

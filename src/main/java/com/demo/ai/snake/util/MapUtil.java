@@ -34,10 +34,6 @@ public class MapUtil {
      */
     private Point endP;
     /**
-     * 是否寻路成功
-     */
-    private boolean flag = false;
-    /**
      * 4个方向移动的向量
      */
     private static final int[] dx={1,0,-1,0};
@@ -67,9 +63,7 @@ public class MapUtil {
                 Point nextP = new Point(p.x+dx[i],p.y+dy[i]);
                 if(nextP.equals(endP)){
                     dis[nextP.x][nextP.y] = dis[p.x][p.y]+1;
-                    flag = true;
-                    queue = new LinkedBlockingQueue<>();
-                    break;
+                    return true;
                 }
                 //下一个坐标是否可以移动
                 if((map[nextP.x][nextP.y].equals(MapEnum.EMPTY) || (map[nextP.x][nextP.y].equals(MapEnum.FOOD)))
@@ -93,19 +87,17 @@ public class MapUtil {
             }
             System.out.println();
         }*/
-        return flag;
+        return false;
     }
     /**
      * 寻找路径
      * @return
      */
-    public Queue<Point> getPath(){
-        if(!flag) {return null;}
+    public Queue<Point> getShortestPath(){
         //查找路径
         List<Point> path = new ArrayList<>(dis[endP.x][endP.y]);
         path.add(endP);
         Point p = endP;
-
         for(int i=1;i<dis[endP.x][endP.y];i++){
             for(int j=0;j<4;j++){
                 if(dis[p.x+dx[j]][p.y+dy[j]] == dis[p.x][p.y]-1){
