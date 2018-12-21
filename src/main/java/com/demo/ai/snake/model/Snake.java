@@ -60,7 +60,13 @@ public class Snake {
         return body.getLast();
     }
 
-
+    /**
+     * 返回蛇身长度
+     * @return
+     */
+    public int getLength(){
+        return body.size();
+    }
     public LinkedList<Point> getBody() {
         return body;
     }

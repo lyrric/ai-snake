@@ -176,6 +176,19 @@ public class GameData {
         addFoodToMap();
         addSnakeToMap();
     }
+
+    /**
+     * 获得地图的拷贝
+     *
+     * @return
+     */
+    public MapEnum[][] getMapCopy() {
+        MapEnum[][] mapCopy = new MapEnum[MAP_WIDTH][MAP_HEIGHT];
+        for(int i=0;i<map.length;i++){
+            System.arraycopy(map[i], 0, mapCopy[i], 0, map[i].length);
+        }
+        return mapCopy;
+    }
     public Point getFoodPoint() {
         return foodPoint;
     }
@@ -187,4 +200,6 @@ public class GameData {
     public Snake getSnake() {
         return snake;
     }
+
+
 }

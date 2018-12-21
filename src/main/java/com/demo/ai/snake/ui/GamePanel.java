@@ -17,8 +17,6 @@ import static com.demo.ai.snake.data.GameData.*;
  */
 public class GamePanel extends JPanel {
     private JButton startBtn;
-    private JButton speedUpBtn;
-    private JButton speedDownBtn;
     private GameData gameData;
     private GameCore gameCore;
     /**
@@ -35,24 +33,13 @@ public class GamePanel extends JPanel {
         startBtn.setLocation(MAP_WIDTH*(GRID_WIDTH+1)-10,100);
         startBtn.setMargin(new java.awt.Insets(0,0,0,0));
         startBtn.addActionListener(e->{
-            gameCore.startGame();
+            if(gameCore.startGame()){
+                startBtn.setText("重新开始");
+            }
+
         });
         this.add(startBtn);
 
-        speedUpBtn = new JButton("加速");
-        speedUpBtn.setSize(50,30);
-        speedUpBtn.setFont(new Font("", Font.BOLD, 14));
-        speedUpBtn.setMargin(new java.awt.Insets(0,0,0,0));
-
-        speedUpBtn.setLocation(MAP_WIDTH*(GRID_WIDTH+1)-10,160);
-        this.add(speedUpBtn);
-
-        speedDownBtn = new JButton("减速");
-        speedDownBtn.setSize(50,30);
-        speedDownBtn.setFont(new Font("", Font.BOLD, 14));
-        speedDownBtn.setMargin(new java.awt.Insets(0,0,0,0));
-        speedDownBtn.setLocation(MAP_WIDTH*(GRID_WIDTH+1)+50,160);
-        this.add(speedDownBtn);
 
         init();
     }
