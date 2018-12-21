@@ -5,10 +5,8 @@ import com.demo.ai.snake.model.Snake;
 import com.sun.corba.se.impl.orbutil.ObjectStreamClassUtil_1_3;
 
 import java.awt.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
+import java.util.*;
 import java.util.List;
-import java.util.Queue;
 
 import static com.demo.ai.snake.constant.MapEnum.*;
 import static com.demo.ai.snake.data.GameData.MAP_HEIGHT;
@@ -37,6 +35,7 @@ public class SimulateGame {
         this.snake = snake;
         this.path = new ArrayList<>(path.size());
         this.path.addAll(path);
+        Collections.reverse(this.path);
         //初始化地图
         map = new MapEnum[MAP_WIDTH][MAP_HEIGHT];
         for(int i=0;i<MAP_WIDTH;i++){
@@ -64,28 +63,29 @@ public class SimulateGame {
         }
         //将蛇身映射在地图上
         newSnakeBody.forEach(point -> map[point.x][point.y]=SNAKE_BODY);
-        //map[(newSnakeBody).getLast().x][ newSnakeBody.getLast().y] = FOOD;
         //判断蛇头能否找到蛇尾
+        //如果蛇头和蛇尾相邻，则判断为不能找到蛇尾
+        if(MapUtil.isAdjacent(newSnakeBody.getFirst(),newSnakeBody.getLast())){
+            return false;
+        }
         MapUtil mapUtil = new MapUtil(map, newSnakeBody.getFirst(), newSnakeBody.getLast());
-        boolean f = mapUtil.isReachable();
-/*        if(!f){
-             System.out.println("地图");
-            for(int i=0; i<MAP_WIDTH; i++){
-                for(int j=0; j<MAP_HEIGHT; j++){
-                    if(map[j][i].equals(SNAKE_BODY)){
-                        System.out.print("body");
-                    }else if(map[j][i].equals(FOOD)){
-                        System.out.print("food");
-                    }else if(map[j][i].equals(WALL)){
-                        System.out.print("wall");
-                    }else{
-                        System.out.print("empt");
-                    }
-
+        return mapUtil.isReachable();
+        /*
+        System.out.println("地图");
+        for(int i=0; i<MAP_WIDTH; i++){
+            for(int j=0; j<MAP_HEIGHT; j++){
+                if(map[j][i].equals(SNAKE_BODY)){
+                    System.out.print("body");
+                }else if(map[j][i].equals(FOOD)){
+                    System.out.print("food");
+                }else if(map[j][i].equals(WALL)){
+                    System.out.print("wall");
+                }else{
+                    System.out.print("empt");
                 }
-                System.out.println();
+
             }
+            System.out.println();
         }*/
-        return f;
     }
 }

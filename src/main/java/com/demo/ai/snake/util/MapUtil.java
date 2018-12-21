@@ -34,10 +34,14 @@ public class MapUtil {
      */
     private Point endP;
     /**
+     * 是否寻路成功
+     */
+    private boolean flag = false;
+    /**
      * 4个方向移动的向量
      */
-    private final int[] dx={1,0,-1,0};
-    private final int[] dy={0,1,0,-1};
+    private static final int[] dx={1,0,-1,0};
+    private static final int[] dy={0,1,0,-1};
 
     public MapUtil(MapEnum[][] map, Point startP, Point endP) {
         this.map = map;
@@ -52,17 +56,12 @@ public class MapUtil {
      */
     public boolean isReachable(){
         //是否寻路成功标识
-        boolean flag = false;
         Queue<Point> queue = new LinkedBlockingQueue<>();
         //加入起点，开始遍历
         queue.add(startP);
         do{
             //取出头
             Point p = queue.remove();
-            if(p.equals(endP)){
-                flag = true;
-                break;
-            }
             //向四个方向探寻
             for(int i=0;i<4;i++){
                 Point nextP = new Point(p.x+dx[i],p.y+dy[i]);
@@ -101,6 +100,7 @@ public class MapUtil {
      * @return
      */
     public Queue<Point> getPath(){
+        if(!flag) {return null;}
         //查找路径
         List<Point> path = new ArrayList<>(dis[endP.x][endP.y]);
         path.add(endP);
@@ -117,5 +117,35 @@ public class MapUtil {
         }
         Collections.reverse(path);
         return new ConcurrentLinkedQueue<>(path);
+    }
+
+    /**
+     * 判断两个点是否相邻
+     * @param p1
+     * @param p2
+     * @return
+     */
+    public static boolean isAdjacent(Point p1, Point p2){
+        for(int i=0;i<4;i++){
+            if(new Point(p1.x+dx[i], p1.y+dy[i]).equals(p2)){
+                return true;
+            }
+        }
+        return false;
+    }
+
+    /**
+     * 获得地图上位于坐标点周围空的一点
+     * @param p
+     * @param map
+     * @return
+     */
+    public static Point getAdjacentEmptyPoint(Point p, MapEnum[][] map){
+        for(int i=0;i<4;i++){
+            if(map[p.x+dx[i]][p.y+dy[i]].equals(MapEnum.EMPTY)){
+                return new Point(p.x+dx[i],p.y+dy[i]);
+            }
+        }
+        return null;
     }
 }

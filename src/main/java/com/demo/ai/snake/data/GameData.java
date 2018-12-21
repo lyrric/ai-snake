@@ -56,7 +56,7 @@ public class GameData {
      */
     public void init(){
         score = 0;
-        speed = 8;
+        speed = 10;
         snake.init();
         gameStatus = GameStatusEnum.STOP;
         for(int i=0;i<MAP_WIDTH;i++){

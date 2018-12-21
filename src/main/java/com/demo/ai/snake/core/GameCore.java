@@ -66,49 +66,48 @@ public class GameCore {
 
         @Override
         public void run() {
-            //指令集，路径
-            Queue<Point> path = new ConcurrentLinkedQueue<>();
+            //下一个路径
+            Point nextP;
             gameData.setGameStatus(GameStatusEnum.FIND_PATH);
             //先生成食物
             gameData.randomFood();
+            gameData.update();
+            gamePanel.repaint();
             while (true) {
-                if (path.size() == 0) {
-                    //路走完了，重新找去食物的路
-                    System.out.println("路走完了，重新寻路中...");
-                    MapUtil mapUtil = new MapUtil(gameData.getMapCopy(), snake.getHead(), gameData.getFoodPoint());
+                //找去食物的路
+                MapUtil mapUtil = new MapUtil(gameData.getMapCopy(), snake.getHead(), gameData.getFoodPoint());
+                //有路去食物，并且吃了食物之后能找到蛇尾
+                if (mapUtil.isReachable() && new SimulateGame(snake, mapUtil.getPath()).isSafe()) {
+                   //放行
+                   nextP = mapUtil.getPath().remove();
+                } else {
+                    //找不到去食物的路，或者吃了食物之后找不到蛇尾
+                    //尝试跟着尾巴走,走一步就重新找一下去食物的路
+                    mapUtil = new MapUtil(gameData.getMapCopy(), snake.getHead(), snake.getTail());
                     if (mapUtil.isReachable()) {
-                        //有路去食物，需要判断吃了食物后，能不能找到尾巴
-                        path = mapUtil.getPath();
-                        //模拟游戏，能找到蛇尾则放行去吃蛇尾
-                        if(!new SimulateGame(snake, path).isSafe()){
-                            //吃了食物之后找不到蛇尾，则先向尾巴方向前进一步
-                            System.out.println("吃了食物之后找不到蛇尾，则先向尾巴方向前进一步");
-                            mapUtil = new MapUtil(gameData.getMapCopy(), snake.getHead(), snake.getTail());
-                            mapUtil.isReachable();
-                            Queue<Point> tempPath = mapUtil.getPath();
-                            path = new ConcurrentLinkedQueue<>();
-                            path.add(tempPath.remove());
+                        //有路去尾巴，则向尾巴方向前进，前进一步计算重新计算
+                        System.out.println("找不到去食物的路，先向尾巴方向前进一步");
+                        Queue<Point> tempPath = mapUtil.getPath();
+                        nextP = tempPath.remove();
+                        //需要判断下，头和尾相邻的情况，直接前行会撞上
+                        if(snake.getTail().equals(nextP)){
+                            //如果头尾相邻，则随机走一步空的位置
+                            nextP = MapUtil.getAdjacentEmptyPoint(snake.getHead(), gameData.getMapCopy());
+                            if(nextP==null){
+                                //死定了
+                                System.out.println("死定了");
+                                gameData.setGameStatus(GameStatusEnum.STOP);
+                                return;
+                            }
                         }
                     } else {
-                        //找不到去食物的路
-                        System.out.println("寻路失败，找不到去食物的路");
-                        //尝试跟着尾巴走,走一步就重新找一下去食物的路
-                        mapUtil = new MapUtil(gameData.getMapCopy(), snake.getHead(), snake.getTail());
-                        if (mapUtil.isReachable()) {
-                            //有路去尾巴，则向尾巴方向前进，前进一步计算重新计算
-                            Queue<Point> tempPath = mapUtil.getPath();
-                            path = new ConcurrentLinkedQueue<>();
-                            path.add(tempPath.remove());
-                        } else {
-                            //找不到去尾巴的路，结束游戏
-                            System.out.println("找不到去尾巴的路，结束游戏");
-                            gameData.setGameStatus(GameStatusEnum.STOP);
-                            return;
-                        }
+                        //找不到去尾巴的路，结束游戏（不会发生）
+                        System.out.println("找不到去尾巴的路，结束游戏");
+                        gameData.setGameStatus(GameStatusEnum.STOP);
+                        return;
                     }
                 }
-                Point newHead = path.remove();
-                switch (gameData.getPoint(newHead.x, newHead.y)){
+                switch (gameData.getPoint(nextP.x, nextP.y)){
                     case WALL:
                         //撞墙了，游戏结束
                         System.out.println("撞墙了，游戏结束");
@@ -129,11 +128,11 @@ public class GameCore {
                          snake.removeTail();
                 }
                 //添头去尾，实现移动
-                snake.addFirst(newHead);
+                snake.addFirst(nextP);
                 gameData.update();
                 gamePanel.repaint();
                 try {
-                    Thread.sleep(1000 - gameData.getSpeed() * 100 - 100);
+                    Thread.sleep(1000 - gameData.getSpeed() * 100 + 50);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 }
