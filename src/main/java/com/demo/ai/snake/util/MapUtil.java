@@ -93,13 +93,23 @@ public class MapUtil {
      * 寻找路径
      * @return
      */
-    public Queue<Point> getShortestPath(){
+    public List<Point> getShortestPath(){
+        return getShortestPath(0);
+    }
+    /**
+     * 寻找路径
+     * @param direction 优先方向
+     * @return
+     */
+    public List<Point> getShortestPath(int direction){
         //查找路径
-        List<Point> path = new ArrayList<>(dis[endP.x][endP.y]);
+        List<Point> path = new LinkedList<>();
         path.add(endP);
         Point p = endP;
         for(int i=1;i<dis[endP.x][endP.y];i++){
-            for(int j=0;j<4;j++){
+            int temp = 1;
+            for(int j=direction;temp<5;j++,temp++){
+                if(j == 4){j=0;}
                 if(dis[p.x+dx[j]][p.y+dy[j]] == dis[p.x][p.y]-1){
                     p = new Point( p.x+dx[j], p.y+dy[j]);
                     path.add(p);
@@ -108,9 +118,8 @@ public class MapUtil {
             }
         }
         Collections.reverse(path);
-        return new ConcurrentLinkedQueue<>(path);
+        return path;
     }
-
     /**
      * 判断两个点是否相邻
      * @param p1

@@ -7,8 +7,10 @@ import com.demo.ai.snake.ui.GamePanel;
 import com.demo.ai.snake.util.MapUtil;
 import com.demo.ai.snake.util.SimulateGame;
 
-import java.awt.Point;
+import java.awt.*;
+import java.util.List;
 import java.util.Queue;
+import java.util.concurrent.LinkedBlockingQueue;
 
 /**
  * Created on 2018/12/20.
@@ -58,46 +60,60 @@ public class GameCore {
         @Override
         public void run() {
             //下一个路径
-            Point nextP;
+            //是否在追蛇尾
+            boolean flag = false;
+            Queue<Point> path = new LinkedBlockingQueue<>();
             gameData.setGameStatus(GameStatusEnum.FIND_PATH);
             //先生成食物
             gameData.randomFood();
             gameData.update();
             gamePanel.repaint();
             while (true) {
-                //找去食物的路
-                MapUtil mapUtil = new MapUtil(gameData.getMapCopy(), snake.getHead(), gameData.getFoodPoint());
-                //有路去食物，并且吃了食物之后能找到蛇尾
-                if (mapUtil.isReachable() && new SimulateGame(snake, mapUtil.getShortestPath()).isSafe()) {
-                   //放行
-                   nextP = mapUtil.getShortestPath().remove();
-                } else {
-                    //找不到去食物的路，或者吃了食物之后找不到蛇尾
-                    //尝试跟着尾巴走,走一步就重新找一下去食物的路
-                    mapUtil = new MapUtil(gameData.getMapCopy(), snake.getHead(), snake.getTail());
-                    if (mapUtil.isReachable()) {
-                        //有路去尾巴，则向尾巴方向前进，前进一步计算重新计算
-                        System.out.println("找不到去食物的路，先向尾巴方向前进一步");
-                        Queue<Point> tempPath = mapUtil.getShortestPath();
-                        nextP = tempPath.remove();
-                        //需要判断下，头和尾相邻的情况，直接前行会撞上
-                        if(snake.getTail().equals(nextP)){
-                            //如果头尾相邻，则随机走一步空的位置
-                            nextP = MapUtil.getAdjacentEmptyPoint(snake.getHead(), gameData.getMapCopy());
-                            if(nextP==null){
-                                //死定了
-                                System.out.println("死定了");
-                                gameData.setGameStatus(GameStatusEnum.STOP);
-                                return;
-                            }
-                        }
+                if(path.size() == 0){
+                    //找去食物的路
+                    MapUtil mapUtil = new MapUtil(gameData.getMapCopy(), snake.getHead(), gameData.getFoodPoint());
+                    //有路去食物，并且吃了食物之后能找到蛇尾
+                    List<Point> tempPath;
+                    if (mapUtil.isReachable() && (tempPath = new SimulateGame(snake, mapUtil).getSafePath()) != null) {
+                        //放行
+                        path = new LinkedBlockingQueue<>(tempPath);
+
+                        //每次计算最新路径
+                        //path.add(mapUtil.getShortestPath().remove(0));
                     } else {
-                        //找不到去尾巴的路，结束游戏（不会发生）
-                        System.out.println("找不到去尾巴的路，结束游戏");
-                        gameData.setGameStatus(GameStatusEnum.STOP);
-                        return;
+                        //找不到去食物的路，或者吃了食物之后找不到蛇尾
+                        //尝试跟着尾巴走,走一步就重新找一下去食物的路
+                        mapUtil = new MapUtil(gameData.getMapCopy(), snake.getHead(), snake.getTail());
+                        if (mapUtil.isReachable()) {
+                            //有路去尾巴，则向尾巴方向前进，前进一步计算重新计算
+                            System.out.println("找不到去食物的路，跟随尾巴前进");
+                            tempPath = mapUtil.getShortestPath();
+                            Point nextP = tempPath.get(0);
+                            //需要判断下，头和尾相邻的情况，直接前行会撞上
+                            if(snake.getTail().equals(nextP)){
+                                //如果头尾相邻，则随机走一步空的位置
+                                System.out.println("如果头尾相邻，则随机走一步空的位置");
+                                nextP = MapUtil.getAdjacentEmptyPoint(snake.getHead(), gameData.getMapCopy());
+                                if(nextP==null){
+                                    //死定了
+                                    System.out.println("死定了");
+                                    gameData.setGameStatus(GameStatusEnum.STOP);
+                                    return;
+                                }
+                                path.add(nextP);
+                            }else{
+                                path = new LinkedBlockingQueue<>(tempPath);
+                            }
+                        } else {
+                            //找不到去尾巴的路，结束游戏（不会发生）
+                            System.out.println("找不到去尾巴的路，结束游戏");
+                            gameData.setGameStatus(GameStatusEnum.STOP);
+                            return;
+                        }
                     }
                 }
+
+                Point nextP = path.remove();
                 switch (gameData.getPoint(nextP.x, nextP.y)){
                     case WALL:
                         //撞墙了，游戏结束
