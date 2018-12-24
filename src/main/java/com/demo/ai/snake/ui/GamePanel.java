@@ -81,6 +81,12 @@ public class GamePanel extends JPanel {
         g.drawString("游戏状态:"+gameData.getGameStatus().getContent(),MAP_WIDTH*(GRID_WIDTH+1),80);
     }
 
+    /**
+     * 弹出通关提示框
+     */
+    public void clear(){
+        JOptionPane.showMessageDialog(this, "恭喜通关！", "提示", JOptionPane.INFORMATION_MESSAGE);
+    }
     @Override
     public void update(Graphics g) {
         super.update(g);

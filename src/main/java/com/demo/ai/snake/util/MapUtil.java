@@ -1,6 +1,7 @@
 package com.demo.ai.snake.util;
 
 import com.demo.ai.snake.constant.MapEnum;
+import com.demo.ai.snake.model.Snake;
 
 import java.awt.*;
 import java.util.*;
@@ -43,7 +44,7 @@ public class MapUtil {
         this.map = map;
         this.startP = startP;
         this.endP = endP;
-        dis = new int[MAP_WIDTH][MAP_HEIGHT];
+        dis = new int[map.length][map[0].length];
     }
 
     /**
@@ -73,20 +74,6 @@ public class MapUtil {
                 }
             }
         }while(queue.size() != 0);
-/*        System.out.println("地图到起点距离图");
-        for(int i=0; i<MAP_WIDTH; i++){
-            for(int j=0; j<MAP_HEIGHT; j++){
-                if(i == endP.y && j == endP.x){
-                    System.out.print("endP");
-                }else if(i == startP.y && j == startP.x){
-                    System.out.print("Star");
-                }else {
-                    System.out.print(String.format("% 4d", dis[j][i]));
-                }
-
-            }
-            System.out.println();
-        }*/
         return false;
     }
     /**
@@ -118,6 +105,44 @@ public class MapUtil {
             }
         }
         Collections.reverse(path);
+        return path;
+    }
+
+    /**
+     * 获取最长路径，近似算法
+     * @return
+     */
+    public List<Point> getLongestPath(){
+        List<Point> path = getShortestPath();
+        //加入头
+        path.add(0,startP);
+        for(Point p:path){
+            map[p.x][p.y] = MapEnum.SNAKE_BODY;
+        }
+        for(int i=0;i<path.size()-1;){
+            Point p1 = path.get(i);
+            Point p2 = path.get(i+1);
+            int j;
+            //往四个方向扩展边
+            for(j=0;j<4;j++){
+                if(map[p1.x+dx[j]][p1.y+dy[j]] == MapEnum.EMPTY
+                        && map[p2.x+dx[j]][p2.y+dy[j]] == MapEnum.EMPTY ){
+                    break;
+                }
+            }
+            if(j < 4){
+                Point newP1 = new Point(p1.x+dx[j],p1.y+dy[j]);
+                Point newP2 = new Point(p2.x+dx[j],p2.y+dy[j]);
+                path.add(i+1, newP1);
+                path.add(i+2, newP2);
+                map[newP1.x][newP1.y] = MapEnum.SNAKE_BODY;
+                map[newP2.x][newP2.y] = MapEnum.SNAKE_BODY;
+            }else{
+                i++;
+            }
+        }
+        //去掉头
+        path.remove(0);
         return path;
     }
     /**

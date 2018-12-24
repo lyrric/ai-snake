@@ -10,7 +10,8 @@ public enum GameStatusEnum {
      * 游戏状态
      */
     STOP(0,"游戏停止"),
-    FIND_PATH(1,"寻路中");
+    RUNNING(1,"寻路中"),
+    CLEAR(2,"恭喜，通关");
     private int code;
     private String content;
 

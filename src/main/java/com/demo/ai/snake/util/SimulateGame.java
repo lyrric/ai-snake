@@ -56,9 +56,6 @@ public class SimulateGame {
     public List<Point> getSafePath(){
         for(int k=0;k<4;k++){
             //初始化地图
-            if(k == 1){
-                System.out.println("11");
-            }
             initMap();
             int length = snake.getLength();
             //吃掉食物后的蛇身
@@ -76,14 +73,10 @@ public class SimulateGame {
             //将蛇身映射在地图上
             newSnakeBody.forEach(point -> map[point.x][point.y]=SNAKE_BODY);
             //判断蛇头能否找到蛇尾
-            //如果蛇头和蛇尾相邻，则判断为不能找到蛇尾
-            if(!MapUtil.isAdjacent(newSnakeBody.getFirst(),newSnakeBody.getLast())){
-                MapUtil mapUtil = new MapUtil(map, newSnakeBody.getFirst(), newSnakeBody.getLast());
-               if(mapUtil.isReachable()){
-                   return path;
-               }
+            MapUtil mapUtil = new MapUtil(map, newSnakeBody.getFirst(), newSnakeBody.getLast());
+            if(mapUtil.isReachable()){
+                return path;
             }
-
         }
         return null;
     }

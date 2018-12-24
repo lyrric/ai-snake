@@ -109,18 +109,11 @@ public class GameData {
     /**
      * score++
      */
-    public void scoreInc(){
+    public void  scoreInc() {
         score++;
     }
 
-    /**
-     * speed++
-     */
-    public void speedInc(){
-        if(speed < 10){
-            speed++;
-        }
-    }
+
 
     public GameStatusEnum getGameStatus() {
         return gameStatus;
