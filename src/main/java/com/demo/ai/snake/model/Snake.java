@@ -24,10 +24,10 @@ public class Snake {
 
     public void init(){
         body = new LinkedList<>();
-        body.addFirst(new Point(3,17));
-        body.addFirst(new Point(4,17));
-        body.addFirst(new Point(5,17));
-        body.addFirst(new Point(6,17));
+        body.addFirst(new Point(3,15));
+        body.addFirst(new Point(4,15));
+        body.addFirst(new Point(5,15));
+        body.addFirst(new Point(6,15));
     }
 
     /**

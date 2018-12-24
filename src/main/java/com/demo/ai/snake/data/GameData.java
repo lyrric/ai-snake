@@ -18,11 +18,11 @@ public class GameData {
     /**
      * 地图宽
      */
-    public static final int MAP_WIDTH = 20;
+    public static final int MAP_WIDTH = 19;
     /**
      * 地图高
      */
-    public static final int MAP_HEIGHT = 20;
+    public static final int MAP_HEIGHT = 19;
     /**
      * 地图
      */
